@@ -27,8 +27,8 @@ git clone https://github.com/WhiteWolfysGame/utils.git
 
 3. **Verwenden der Libraries:** Importieren Sie die entsprechenden Namespaces in Ihren Quellcode und nutzen Sie die Funktionen und Erweiterungen, die in den einzelnen Libraries bereitgestellt werden.
 
-**Beispiele:**
-1. **Verwendung der Library Csv**
+**Beispiel:**
+**Verwendung der Library Csv**
 ``` csharp
 using Utils.Lib.Csv;
 
