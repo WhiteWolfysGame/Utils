@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Utils</name>
+    </assembly>
+    <members>
+        <member name="T:Utils.Lib.Csv.Csv">
+            <summary>
+            Die Klasse "Csv" ist eine öffentliche Klasse, 
+            die eine einfache Implementierung zum Lesen und Schreiben von CSV-Dateien bietet. 
+            Die Klasse enthält Methoden zum Lesen und Schreiben von CSV-Dateien sowie Eigenschaften, 
+            die die Trennzeichen und Zeilenenden der CSV-Dateien steuern.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.Csv.Columns">
+            <summary>
+            Gibt die Spalten der CSV-Datei zurück
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.Csv.Filename">
+            <summary>
+            Gibt den Namen der Datei zurück
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.Csv.NumRows">
+            <summary>
+            Gibt die Anzahl der Zeilen zurück
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.Csv.NumColumns">
+            <summary>
+            Gibt die Anzahl der Spalten zurück
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.#ctor(System.String,System.Char)">
+            <summary>
+            Erstellt eine neue Instanz vom Typ <see cref="T:Utils.Lib.Csv.Csv"/> um CSV-Dateien zu lesen
+            </summary>
+            <param name="file">Dateipfad der zu öffnenden Datei</param>
+            <param name="separator">Trennzeichen in der CSV-Datei</param>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.readCsvFile">
+            <summary>
+            Liest die CSV-Datei und Organisiert die Einträge
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.getFilestream">
+            <summary>
+            Liefert den zu lesenden Datenstream
+            </summary>
+            <returns>StreamReader</returns>
+            <exception cref="T:System.IO.FileNotFoundException">Ausnahme, wenn die angegebene Datei nicht existiert</exception>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.buildHeader(System.Boolean)">
+            <summary>
+            Stellt Headerdaten aus der CSV-Datei bereit
+            </summary>
+            <param name="headerSetted">Wurde der Header gesetzt?</param>
+            <returns>true, wenn Header gesetzt wurde. Liefert immer true zurück</returns>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.buildRows">
+            <summary>
+            Stellt die Zeilen aus der CSV-Datei bereit
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.manageCsvColumns">
+            <summary>
+            Organisiert die Spalten mit den zugehörigen Einträgen
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.Csv.Item(System.Int32)">
+            <summary>
+            Gibt die Spalte zurück die im index definiert wird
+            </summary>
+            <param name="index">Spaltenindex</param>
+            <returns>CSV-Spalte</returns>
+        </member>
+        <member name="P:Utils.Lib.Csv.Csv.Item(System.String)">
+            <summary>
+            Gibt den Spaltenindex zurück, der im keyword definiert wird
+            </summary>
+            <param name="keyword">Spaltenname</param>
+            <returns>Spaltenindex</returns>
+        </member>
+        <member name="M:Utils.Lib.Csv.Csv.getIndex(System.String)">
+            <summary>
+            Findet einen bestimmten Spaltentitel
+            </summary>
+            <param name="keyword">Spaltentitel</param>
+            <returns>Index</returns>
+        </member>
+        <member name="T:Utils.Lib.Csv.CsvCell">
+            <summary>
+            Repräsentiert eine einzelne Zelle in einer CSV-Datei.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.CsvCell.Value">
+            <summary>
+            Der Wert dieser CSV-Zelle.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.CsvCell.Index">
+            <summary>
+            Der Index dieser CSV-Zelle.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Csv.CsvCell.#ctor">
+            <summary>
+            Initialisiert eine neue Instanz der CsvCell-Klasse.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Csv.CsvCell.#ctor(System.Int32,System.String)">
+            <summary>
+            Initialisiert eine neue Instanz der CsvCell-Klasse mit einem angegebenen Index und Wert.
+            </summary>
+            <param name="id">Der Index dieser CSV-Zelle innerhalb der CSV-Zeile.</param>
+            <param name="value">Der Wert dieser CSV-Zelle.</param>
+        </member>
+        <member name="T:Utils.Lib.Csv.CsvColumn">
+            <summary>
+            Eine Klasse, die eine Spalte in einem CSV-Dokument darstellt.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.CsvColumn.Title">
+            <summary>
+            Der Titel der Spalte
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.CsvColumn.ColumnIndex">
+            <summary>
+            Der Index der Spalte
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.Csv.CsvColumn.Rows">
+            <summary>
+            Ein Array von <see cref="T:Utils.Lib.Csv.CsvCell"/>-Objekten, das die Zellen in der Spalte darstellt.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Csv.CsvColumn.#ctor(Utils.Lib.Csv.CsvCell)">
+            <summary>
+            Initialisiert eine neue <see cref="T:Utils.Lib.Csv.CsvColumn"/>-Instanz mit einem gegebenen Titel
+            Der Index der Spalte wird aus der Index-Eigenschaft des übergebenen <see cref="T:Utils.Lib.Csv.CsvCell"/>-Objekts extrahiert
+            </summary>
+            <param name="title">Das <see cref="T:Utils.Lib.Csv.CsvCell"/>-Objekt, das den Titel der Spalte enthält.</param>
+        </member>
+    </members>
+</doc>
