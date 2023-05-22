@@ -206,5 +206,84 @@
             </summary>
             <param name="value">Der Wert, der zum aktuellen Startwert hinzugefügt wird.</param>
         </member>
+        <member name="T:Utils.Lib.Json.Json">
+            <summary>
+            Bietet Methoden zum Konvertieren von JSON-Strings und -Objekten sowie 
+            zum Speichern und Laden von Objekten in und aus JSON-Dateien.
+            Diese Klasse verwendet die Newtonsoft.Json-Bibliothek.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.#ctor">
+            <summary>
+            Initialisiert eine neue Instanz der <see cref="T:Utils.Lib.Json.Json"/>-Klasse
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.GetJsonStringFromObject(System.Object)">
+            <summary>
+            Gibt eine JSON-String-Repräsentation des angegebenen Objekts zurück.
+            </summary>
+            <param name="obj">Das zu serialisierende Objekt.</param>
+            <returns>Eine JSON-String-Darstellung des angegebenen Objekts.</returns>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.GetJsonStringFromObject(System.Object,System.Boolean)">
+            <summary>
+            Gibt eine JSON-String-Darstellung des angegebenen Objekts zurück, optional formatiert.
+            </summary>
+            <param name="obj">Das Objekt, das in einen JSON-String serialisiert werden soll.</param>
+            <param name="indentedFormat">True, um eine formatierte Ausgabe zu verwenden, andernfalls False.</param>
+            <returns>Eine JSON-String-Darstellung des angegebenen Objekts.</returns>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.SaveJsonObjectToFile(System.String,System.Object)">
+            <summary>
+            Speichert das angegebene Objekt in einer JSON-Datei.
+            </summary>
+            <param name="filename">Der Name der Datei, in der das Objekt gespeichert werden soll.</param>
+            <param name="obj">Das zu speichernde Objekt.</param>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.SaveJsonObjectToFile(System.String,System.Object,System.Boolean)">
+            <summary>
+            Speichert das angegebene Objekt in einer JSON-Datei mit optionaler Formatierung.
+            </summary>
+            <param name="filename">Der Name der Datei, in der das Objekt gespeichert werden soll.</param>
+            <param name="obj">Das zu speichernde Objekt.</param>
+            <param name="indentedFormat">True, um eine formatierte Ausgabe zu verwenden, andernfalls False.</param>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.GetObjectFromFile(System.String)">
+            <summary>
+            Liest eine JSON-Datei und gibt das deserialisierte Objekt zurück.
+            </summary>
+            <param name="filename">Der Name der zu lensenden Datei.</param>
+            <returns>Das deserialisierte Objekt</returns>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.GetObjectFromFile``1(System.String)">
+            <summary>
+            Gibt den Objekt des angegebenen Typs aus einer JSON-Datei zurück.
+            </summary>
+            <typeparam name="T">Der Typ des zu deserialisierenden Objekts.</typeparam>
+            <param name="filename">Der Pfad zur JSON-Datei.</param>
+            <returns>Das deserialisierte Objekt.</returns>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.ReadJsonFile(System.String)">
+            <summary>
+            Liest eine JSON-Datei und gibt den Inhalt als String zurück.
+            </summary>
+            <param name="jsonfile">Der Pfad zur JSON-Datei</param>
+            <returns>Der Inhalt der JSON-Datei als String.</returns>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.GetObjectFromJsonString(System.String)">
+            <summary>
+            Gibt ein dynamisches Objekt aus einem JSON-String zurück.
+            </summary>
+            <param name="json">Der JSON-String.</param>
+            <returns>Das deserialisierte dynamische Objekt.</returns>
+        </member>
+        <member name="M:Utils.Lib.Json.Json.GetObjectFromJsonString``1(System.String)">
+            <summary>
+            Gibt ein Objekt des angegebenen Typs aus einem JSON-String zurück.
+            </summary>
+            <typeparam name="T">Der Typ des zu deserialisierenden Objekts.</typeparam>
+            <param name="json">Der JSON-String</param>
+            <returns>Das deserialisierte Objekt</returns>
+        </member>
     </members>
 </doc>
