@@ -143,5 +143,68 @@
             </summary>
             <param name="title">Das <see cref="T:Utils.Lib.Csv.CsvCell"/>-Objekt, das den Titel der Spalte enthält.</param>
         </member>
+        <member name="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch">
+            <summary>
+            Stellt eine erweiterte Gruppe vom Methoden und Eigenschaften bereit, mit denen die verstrichene Zeit exakt gemessen werden kann.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.IsRunning">
+            <summary>
+            Ruft einen Wert ab, der angibt, ob der <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Zeitgeber ausgeführt wird.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.Elapsed">
+            <summary>
+            Ruft die gesamte verstrichene Zeit ab, die von der aktuellen Instanz gemessen wurde.
+            </summary>
+        </member>
+        <member name="P:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.StartValue">
+            <summary>
+            Ruft den aktuellen Startwert der <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Instanz ab.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.#ctor">
+            <summary>
+            Initialisiert eine neue Instanz der <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Klasse.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.#ctor(System.TimeSpan)">
+            <summary>
+            Initialisiert eine neue Instanz der <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Klasse mit einem bestimmten Startwert.
+            <param name="startvalue">Beginnt den <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/> mit einem bestimmten Startwert</param>
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.Start">
+            <summary>
+            Startet den Messvorgang der verstrichenen Zeit für ein Intervall oder nimmt diesen wieder auf.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.Stop">
+            <summary>
+            Beendet das Messen der verstrichenen Zeit für ein Intervall.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.Reset">
+            <summary>
+            Beendet die Zeitintervallmessung und setzt die verstrichene Zeit auf 0 (null) zurück.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.StopAndReset">
+            <summary>
+            Hält die <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Instanz an und setzt die verstrichene Zeit auf 0 zurück.
+            </summary>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.SetStartValue(System.TimeSpan)">
+            <summary>
+            Setzt einen neuen Startwert der <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Instanz.
+            </summary>
+            <param name="startvalue">Neuer Startwert für die <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Instanz.</param>
+        </member>
+        <member name="M:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch.AddToStartValue(System.TimeSpan)">
+            <summary>
+            Hält die <see cref="T:Utils.Lib.ExtendedStopwatch.ExtendedStopwatch"/>-Instanz an und fügt den angegebenen Wert zum aktuellen Startwert hinzu.
+            </summary>
+            <param name="value">Der Wert, der zum aktuellen Startwert hinzugefügt wird.</param>
+        </member>
     </members>
 </doc>
