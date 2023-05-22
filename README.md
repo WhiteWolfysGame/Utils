@@ -2,7 +2,7 @@
 Willkommen im Utils-Repository! Dieses Projekt ist eine Klassenbibliothek, die in C# geschrieben wurde und verschiedene eigens erstellte Libraries und Methoden-Erweiterungen enthält. Das Hauptziel dieser Bibliothek ist es, nützliche Funktionen und Hilfsmittel bereitzustellen, um die Entwicklung von C#-Anwendungen zu erleichtern.
 
 ## Features
-* **CSV:** Eine eigens erstellte Library zur einfachen Verarbeitung von CSV-Dateien.
+* **CSV:** Eine eigens erstellte Library zum vereinfachten Lesen von CSV-Dateien.
 * **ExtendedStopwatch:** Eine Erweiterung der Stopwatch-Klasse, die zusätzliche Funktionalitäten bietet.
 * **GlobalHotkey:** Eine Library, die die Registrierung und Behandlung globaler Tastenkombinationen ermöglicht.
 * **Json:** Eine Library zur Arbeit mit JSON-Daten unter Verwendung der Newtonsoft.Json-Bibliothek.
@@ -26,6 +26,37 @@ git clone https://github.com/WhiteWolfysGame/utils.git
 - Stellen Sie sicher, dass die erforderlichen Abhängigkeiten (wie Newtonsoft.Json und Twitch.Lib) ebenfalls hinzugefügt werden.
 
 3. **Verwenden der Libraries:** Importieren Sie die entsprechenden Namespaces in Ihren Quellcode und nutzen Sie die Funktionen und Erweiterungen, die in den einzelnen Libraries bereitgestellt werden.
+
+**Beispiele:**
+1. **Verwendung der Library Csv**
+``` csharp
+using Utils.Lib.Csv;
+
+namespace YourNamespace
+{
+    class YourClass
+    {
+        // some code...
+        
+        private void TestCsv()
+        {
+            Csv csv = new Csv("YourCsvFile.txt", ';');  // Initialisiert CSV und lädt alle Daten aus der Datei. CSV-Datei muss einen Header haben!
+            
+            int numCols = csv.NumColumns; // Anzahl der Spalten dieser Datei
+            int numRows = csv.NumRows; // Anzahl der Zeilen
+            
+            CsvColumn cols = csv.Columns; // Gibt ein Array mit CsvColumns zurück
+            CsvColumn colvaluesById = csv[2]; // Gibt Werte der Spalte 3 zurück
+            CsvColumn colvaluesByKeyword = csv["lastname"]; // Gibt Werte einer bestimmten Spalte (Header) zurück
+            
+            CsvCell myRowById = csv[1].Rows[4]; // Liefert den Wert in der Spalte 3 und Zeile 4 zurück
+            CsvCell myRowByKeyword = csv["lastname"].Rows[4]; // Liefert den Wert in Spalte "lastname" und Zeile 4 zurück
+        }
+        // some code...
+    }
+}
+```
+
 
 
 ## Abschluss
