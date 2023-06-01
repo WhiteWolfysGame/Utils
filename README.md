@@ -57,7 +57,7 @@ namespace YourNamespace
 }
 ```
 
-4. Nuget-Pakete
+## Nuget-Pakete
 Um die gesamte Library verwenden zu können, werden folgende Nuget-Pakete benötigt, die neben diesem explizit in den Projekten mit hinterlegt werden müssen:
 - Google.Apis.YouTube.v3 (1.60.0.3043)
 - Newtonsoft.Json (13.0.3)
