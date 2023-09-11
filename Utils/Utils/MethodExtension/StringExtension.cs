@@ -85,5 +85,26 @@ namespace Utils.MethodExtension
             int.TryParse(value, out v);
             return v;
         }
+
+        /// <summary>
+        /// Entfernt doppelte Elemente aus einem String-Array, während die Reihenfolge der Elemente beibehalten wird.
+        /// </summary>
+        /// <param name="inputArray">Eingabe-Array mit möglichen Duplikaten</param>
+        /// <returns>Ein neues Array mit eindeutigen Elementen in der ursprünglichen Reihenfolge.</returns>
+        public static string[] RemoveDuplicates(this string[] inputArray)
+        {
+            HashSet<string> uniqueSet = new HashSet<string>();
+            List<string> uniqueList = new List<string>();
+
+            for(int i = 0; i < inputArray.Length; i++)
+            {
+                if (uniqueSet.Add(inputArray[i]))
+                {
+                    uniqueList.Add(inputArray[i]);
+                }
+            }
+
+            return uniqueList.ToArray();
+        }
     }
 }

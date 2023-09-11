@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Programmierung\\GitRepos\\Utils\\Utils\\Utils\\Utils.csproj": {}
+    "D:\\EichmannMandy\\Software\\repos\\Utils\\Utils\\Utils\\Utils.csproj": {}
   },
   "projects": {
-    "E:\\Programmierung\\GitRepos\\Utils\\Utils\\Utils\\Utils.csproj": {
+    "D:\\EichmannMandy\\Software\\repos\\Utils\\Utils\\Utils\\Utils.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Programmierung\\GitRepos\\Utils\\Utils\\Utils\\Utils.csproj",
+        "projectUniqueName": "D:\\EichmannMandy\\Software\\repos\\Utils\\Utils\\Utils\\Utils.csproj",
         "projectName": "Utils",
-        "projectPath": "E:\\Programmierung\\GitRepos\\Utils\\Utils\\Utils\\Utils.csproj",
-        "packagesPath": "C:\\Users\\YunaK\\.nuget\\packages\\",
-        "outputPath": "E:\\Programmierung\\GitRepos\\Utils\\Utils\\Utils\\obj\\",
+        "projectPath": "D:\\EichmannMandy\\Software\\repos\\Utils\\Utils\\Utils\\Utils.csproj",
+        "packagesPath": "C:\\Users\\CSL\\.nuget\\packages\\",
+        "outputPath": "D:\\EichmannMandy\\Software\\repos\\Utils\\Utils\\Utils\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\YunaK\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\CSL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0-windows7.0"
+          "net6.0-windows"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -59,7 +59,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -71,7 +72,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     }

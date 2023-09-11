@@ -193,6 +193,11 @@ namespace Utils.Lib.YouTube
 
             while (true)
             {
+                if(response.Items == null || response.Items.Count == 0)
+                {
+                    break;
+                }
+
                 foreach (var channelResponse in response.Items)
                 {
                     channelName = channelResponse.Snippet.Title;
