@@ -11,5 +11,6 @@ namespace Utils.Lib.YouTube
         public static string Snippet { get { return "snippet"; } }
         public static string SnippetAndStatistics { get { return "snippet, statistics"; } }
         public static string Contentdetails { get { return "contentDetails"; } }
+        public static string SnippetContentdetailsAndStatus { get { return "snippet, contentDetails, status"; } }
     }
 }
