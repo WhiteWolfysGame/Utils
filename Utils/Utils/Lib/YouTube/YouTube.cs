@@ -52,6 +52,16 @@ namespace Utils.Lib.YouTube
         }
 
         /// <summary>
+        /// Das aufzurufende Event, wenn das Erstellen der Playlist stattfindet und den aktuellen Progress mitteilt
+        /// </summary>
+        public event EventHandler<PlaylistProgressEventArgs> PlaylistProgressUpdate;
+
+        private void ReportPlaylistProgress(int current, int max)
+        {
+            PlaylistProgressUpdate?.Invoke(this, new PlaylistProgressEventArgs(current, max));
+        }
+
+        /// <summary>
         /// Überprüft, ob die Playlist mit der angegebenen ID existiert.
         /// </summary>
         /// <param name="playlistID">Youtube-Playlist-ID</param>
@@ -117,6 +127,7 @@ namespace Utils.Lib.YouTube
             request.MaxResults = 10;// brauchen wir das eigentlich?? Naja vielleicht damit nicht zu viel auf einmal ausgelesen wird..
 
             PlaylistItemListResponse response;
+            int current = 0;
             while (true)
             {
                 response = request.Execute();
@@ -133,6 +144,7 @@ namespace Utils.Lib.YouTube
                     };
 
                     playlistItems.Add(playlistItem);
+                    ReportPlaylistProgress(current++, response.PageInfo.TotalResults.Value);
                 }
                 if (response.NextPageToken == null)
                 {
@@ -140,6 +152,8 @@ namespace Utils.Lib.YouTube
                 }
                 request.PageToken = response.NextPageToken;
             }
+
+            ReportPlaylistProgress(current++, response.PageInfo.TotalResults.Value);
 
             return playlistItems;
         }
@@ -285,4 +299,34 @@ namespace Utils.Lib.YouTube
             return videos;
         }
     }
+
+    /// <summary>
+    /// Klasse zur Definition des aktuellen Prozesses bei der Lizenzüberprüfung
+    /// </summary>
+    public class PlaylistProgressEventArgs : EventArgs
+    {
+        private double progressPercentage;
+        private double value;
+        private double total;
+
+        /// <summary>
+        /// Aktueller Progress
+        /// </summary>
+        public double ProgressPercentage { get { return progressPercentage; } }
+
+        /// <summary>
+        /// Erstellt eine neue Instanz vom Typ <see cref="PlaylistProgressEventArgs"/>
+        /// </summary>
+        /// <param name="current">Aktueller Progress-Value</param>
+        /// <param name="max">Maximaler Progress-Value</param>
+        public PlaylistProgressEventArgs(int current, int max)
+        {
+            value = current;
+            total = max;
+
+            double calc = value / total * 100;
+            progressPercentage = Math.Round(calc, 2);
+        }
+    }
+
 }
