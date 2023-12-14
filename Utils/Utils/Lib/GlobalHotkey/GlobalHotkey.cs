@@ -58,8 +58,10 @@ namespace Utils.Lib.GlobalHotkey
             HotkeyInfo hotkeyInfo = new HotkeyInfo
             {
                 Action = action,
-                Key = key,
-                Modifiers = modifiers
+                Key = new HotkeyDefinition() { Key = key, Modifiers = modifiers }
+
+                //Key = key,
+                //Modifiers = modifiers
             };
             hotkeys[currentId] = hotkeyInfo;
 
@@ -78,7 +80,7 @@ namespace Utils.Lib.GlobalHotkey
         {
             foreach (var hotkeyId in hotkeys.Keys)
             {
-                if (hotkeys[hotkeyId].Key == key && hotkeys[hotkeyId].Modifiers == modifiers)
+                if (hotkeys[hotkeyId].Key.Key == key && hotkeys[hotkeyId].Key.Modifiers == modifiers)
                 {
                     return true;
                 }
@@ -117,6 +119,22 @@ namespace Utils.Lib.GlobalHotkey
         }
 
         /// <summary>
+        /// Gibt eine Liste aller registrierten Hotkeys zurück
+        /// </summary>
+        /// <returns>Liste von HotkeyInfo-Objekten</returns>
+        internal List<HotkeyDefinition> GetHotkeys()
+        {
+            List<HotkeyDefinition> defs = new List<HotkeyDefinition>();
+
+            for(int i = 0; i < hotkeys.Count; i++)
+            {
+                defs.Add(hotkeys[i].Key);
+            }
+
+            return defs;
+        }
+
+        /// <summary>
         /// Erstelle eine protexted Override void WndProc mit dem Referenz-Parameter Message,
         /// um GlobalHotkeys anwenden zu können. Wenn m.Msg == GlobalHotkey.WM_HOTKEY, dann ProcessHotkey(m).
         /// Zum Schluss base.WndProc(ref m)
@@ -140,7 +158,8 @@ namespace Utils.Lib.GlobalHotkey
                 int id = message.WParam.ToInt32();
                 if (hotkeys.ContainsKey(id))
                 {
-                    var info = new HotkeyInfo() { Action = hotkeys[id].Action, Key = hotkeys[id].Key, Modifiers = hotkeys[id].Modifiers };
+                    //var info = new HotkeyInfo() { Action = hotkeys[id].Action, Key = hotkeys[id].Key, Modifiers = hotkeys[id].Modifiers };
+                    var info = new HotkeyInfo() { Action = hotkeys[id].Action, Key = hotkeys[id].Key };
                     OnHotkeyPressed(new HotkeyEventArgs(id, info));
                 }
             }

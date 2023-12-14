@@ -16,14 +16,19 @@ namespace Utils.Lib.GlobalHotkey
         /// </summary>
         public Action Action { get; set; }
 
-        /// <summary>
-        /// Gedrückte Taste
-        /// </summary>
-        public Keys Key { get; set; }
+        ///// <summary>
+        ///// Gedrückte Taste
+        ///// </summary>
+        //public Keys Key { get; set; }
+
+        ///// <summary>
+        ///// Gedrückte weitere Tasten (Modifier)
+        ///// </summary>
+        //public KeyModifiers Modifiers { get; set; }
 
         /// <summary>
-        /// Gedrückte weitere Tasten (Modifier)
+        /// Information der Gedrückten Tasten und Modifier
         /// </summary>
-        public KeyModifiers Modifiers { get; set; }
+        public HotkeyDefinition Key { get; set; }
     }
 }
