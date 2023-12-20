@@ -28,6 +28,7 @@ namespace Utils.Lib.YouTube
 
         private LicenseStatus resultLicenseByApiDescription;
         private LicenseStatus resultLicenseByApiStatusAndContentDetails;
+        private LicenseStatus resultLicenseByApiStatusAndContentDetailsAndForChilds;
         private LicenseStatus resultLicenseByRawHtmlYoutube;
         private LicenseStatus resultLicenseByLemnoslife;
         private LicenseStatus finalStatus;
@@ -37,7 +38,7 @@ namespace Utils.Lib.YouTube
         /// <summary>
         /// Ergebnisdaten der Lizenzüberprüfung
         /// </summary>
-        public YouTubeVideoLicenseStatus VideoStatus { get {  return videoStatus; } }
+        public YouTubeVideoLicenseStatus VideoStatus { get { return videoStatus; } }
 
         /// <summary>
         /// Titel des überprüften Videos
@@ -47,7 +48,7 @@ namespace Utils.Lib.YouTube
         /// <summary>
         /// Name des Youtube-Kanals
         /// </summary>
-        public string Channel { get {  return channelName; } }
+        public string Channel { get { return channelName; } }
 
         /// <summary>
         /// Das aufzurufende Event, wenn die Überprüfung stattfindet und den aktuellen Progress mitteilt
@@ -68,9 +69,10 @@ namespace Utils.Lib.YouTube
             videoId = "";
             url = "";
             apiKey = api;
+
             youTubeService = new YouTubeService(new BaseClientService.Initializer()
             {
-                ApiKey = api,
+                ApiKey = apiKey,
             });
         }
 
@@ -82,8 +84,8 @@ namespace Utils.Lib.YouTube
         {
             url = youtubeUrl.Trim();
             ExtractVideoIdFromUrl();
-            
-            if(videoId == "")
+
+            if (videoId == "")
             {
                 ReportProgress(100);
                 return;
@@ -118,6 +120,12 @@ namespace Utils.Lib.YouTube
                     }
                 }
             }
+            else
+            {
+                string newUrl = youtubeUrlBase + url;
+                url = newUrl;
+                ExtractVideoIdFromUrl();
+            }
 
             ReportProgress(10);
         }
@@ -127,7 +135,11 @@ namespace Utils.Lib.YouTube
         /// </summary>
         private void CheckByYoutubeApi()
         {
-            var videoRequest = youTubeService.Videos.List(YouTubeRequestType.SnippetContentdetailsAndStatus);
+            /*
+             * MonetizationDetails => nicht erlaubt?? (überprüfen)
+             * Suggestions => nicht erlaubt
+             */
+            var videoRequest = youTubeService.Videos.List("snippet, contentDetails, status");
             videoRequest.Id = videoId;
             VideoListResponse videoResponse = videoRequest.Execute();
 
@@ -142,6 +154,7 @@ namespace Utils.Lib.YouTube
                 string licenseByDescription = video.Snippet.Description;
                 bool licenseByContentdetails = video.ContentDetails.LicensedContent.Value;
                 string licenseByStatus = video.Status.License;
+                bool madeForKids = video.Status.MadeForKids.Value;
 
                 // Ergebnisfilter
                 resultLicenseByApiDescription = GetLicenseFromText(licenseByDescription);
@@ -149,6 +162,9 @@ namespace Utils.Lib.YouTube
 
                 resultLicenseByApiStatusAndContentDetails = GetLicenseStatus(licenseByStatus, licenseByContentdetails);
                 ReportProgress(40);
+
+                resultLicenseByApiStatusAndContentDetailsAndForChilds = GetLicenseStatus(licenseByStatus, licenseByContentdetails, madeForKids);
+                ReportProgress(50);
             }
         }
 
@@ -220,12 +236,63 @@ namespace Utils.Lib.YouTube
             }
         }
 
+        private LicenseStatus GetLicenseStatus(string licenseStatus, bool licensedContent, bool madeForKids)
+        {
+            if (!licensedContent && !madeForKids && licenseStatus == YOUTUBE)
+            {
+                // 0,0,0
+                return LicenseStatus.NoCopyright;
+            }
+            else if (licensedContent && !madeForKids && licenseStatus == YOUTUBE)
+            {
+                // 1,0,0
+                // Im Zweifel lizensiert
+                return LicenseStatus.Licensed;
+            }
+            else if (!licensedContent && madeForKids && licenseStatus == YOUTUBE)
+            {
+                // 0,1,0
+                // Für kinder meist lizensiert
+                return LicenseStatus.Licensed;
+            }
+            else if (!licensedContent && !madeForKids && licenseStatus == CREATIVE_COMMON)
+            {
+                // 0,0,1
+                return LicenseStatus.CreativeCommons;
+            }
+            else if (licensedContent && madeForKids && licenseStatus == YOUTUBE)
+            {
+                // 1,1,0
+                // im Zweifel und meist für Kinder lizensiert
+                return LicenseStatus.Licensed;
+            }
+            else if (licensedContent && !madeForKids && licenseStatus == CREATIVE_COMMON)
+            {
+                // 1,0,1
+                // Creative Commons mit Erweiterten Lizenzen, im Zweifel als Lizenziert anzusehen
+                //return LicenseStatus.CreativeCommonsWithExtendedLicense;
+                return LicenseStatus.Licensed;
+            }
+            else if (!licensedContent && madeForKids && licenseStatus == CREATIVE_COMMON)
+            {
+                // 0,1,1
+                // Creative Commons mit Erweiterten Lizenzen, im Zweifel als Lizenziert anzusehen
+                // für kinder meist lizensiert
+                return LicenseStatus.Licensed;
+            }
+            else
+            {
+                // 1,1,1
+                return LicenseStatus.Licensed;
+            }
+        }
+
         /// <summary>
         /// Überprüft das HTML-Skript und filtert Informationen zu Lizenzen
         /// </summary>
         private void CheckByYoutubeRawHtml()
         {
-            if(videoId != null)
+            if (videoId != null)
             {
                 string videoPageSource = DownloadVideoPageSource();
 
@@ -271,7 +338,7 @@ namespace Utils.Lib.YouTube
                 try
                 {
                     HttpResponseMessage response = client.GetAsync(lemnoslifeUrl).Result;
-                    if(response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         string jsonString = response.Content.ReadAsStringAsync().Result;
                         Json.Json json = new Json.Json();
@@ -280,6 +347,12 @@ namespace Utils.Lib.YouTube
                         if (data.items != null && data.items.Count > 0)
                         {
                             resultLicenseByLemnoslife = (data.items[0].musics.Count > 0) ? CheckLemnoslifeMusicData(data) : LicenseStatus.NoCopyright;
+                        }
+                        else
+                        {
+                            // Fehler auf der Seite aufgetreten, keine Info leider. ErrCode 400, heißt hier nicht zwingend lizensiert
+                            //throw new Exception("Fehlercode 400 auf Lemnoslife-Data! Versuche es später noch einmal");
+                            resultLicenseByLemnoslife = LicenseStatus.LemnoslifeTooManyTraffic;
                         }
                     }
                     else
@@ -353,13 +426,15 @@ namespace Utils.Lib.YouTube
             // ResultLicenseByRawHtmlYoutube niedrigste Gewichtung, weil oft zweifelhaft, aber nicht unmöglich
 
             int weightApiStatusAndContentDetails = 5;
+            int weightApiStatusAndCD_inclForChilds = 5;
             int weightLemnoslife = 4;
             int weightApiDescription = 2;
             int weightRawHtmlYoutube = 1;
 
-            int totalWeight = weightApiStatusAndContentDetails + weightLemnoslife + weightApiDescription + weightRawHtmlYoutube;
+            int totalWeight = weightApiStatusAndContentDetails + weightApiStatusAndCD_inclForChilds + weightLemnoslife + weightApiDescription + weightRawHtmlYoutube;
 
             int weightedSum = (int)resultLicenseByApiStatusAndContentDetails * weightApiStatusAndContentDetails +
+                              (int)resultLicenseByApiStatusAndContentDetailsAndForChilds * weightApiStatusAndCD_inclForChilds +
                               (int)resultLicenseByLemnoslife * weightLemnoslife +
                               (int)resultLicenseByApiDescription * weightApiDescription +
                               (int)resultLicenseByRawHtmlYoutube * weightRawHtmlYoutube;
@@ -370,15 +445,31 @@ namespace Utils.Lib.YouTube
             // Konvertiert den berechneten Wert zurück in eine Lizenzstatus-Enumeration
             finalStatus = (LicenseStatus)finalResultValue;
 
+            //if(resultLicenseByLemnoslife == LicenseStatus.LemnoslifeTooManyTraffic)
+            //{
+            //    finalStatus = resultLicenseByLemnoslife;
+            //}
+
             // ResultLicenseByApiStatusAndContentDetails & ResultLicenseByLemnoslife sind sehr vertrauenswürdig
             // Je nach Status muss die Endgültige Lizenz-Definition nochmals gegengeprüft werden
             // um im Zweifel das richtigere Ergebnis zu erlangen
             if (finalStatus != LicenseStatus.Licensed)
             {
-                LicenseStatus[] finalSourcesCheck = {
-                    resultLicenseByApiStatusAndContentDetails,
-                    resultLicenseByLemnoslife
-                };
+                LicenseStatus[] sourceCheck_TooManyTraffic = {
+                        resultLicenseByApiStatusAndContentDetails,
+                        resultLicenseByApiStatusAndContentDetailsAndForChilds,
+                        //resultLicenseByLemnoslife
+                        //, resultLicenseByApiDescription
+                    };
+                LicenseStatus[] sourceCheck_NormalCheck = {
+                        resultLicenseByApiStatusAndContentDetails,
+                        resultLicenseByApiStatusAndContentDetailsAndForChilds,
+                        resultLicenseByLemnoslife
+                        //, resultLicenseByApiDescription
+                    };
+
+                LicenseStatus[] finalSourcesCheck = (resultLicenseByLemnoslife == LicenseStatus.LemnoslifeTooManyTraffic)
+                    ? sourceCheck_TooManyTraffic : sourceCheck_NormalCheck;
 
                 finalStatus = GetHighestPriorityLicense(finalSourcesCheck);
             }
@@ -426,6 +517,11 @@ namespace Utils.Lib.YouTube
         /// </summary>
         Licensed = 2,
         //CreativeCommonsWithExtendedLicense = 3,
+        /// <summary>
+        /// Seite kann zwar geladen werden, jedoch wird seitens Youtube Fehlercode 400 ausgegeben für zu viel Traffic auf der API
+        /// </summary>
+        LemnoslifeTooManyTraffic = 4,
+
     }
 
     /// <summary>
@@ -473,6 +569,9 @@ namespace Utils.Lib.YouTube
                     break;
                 case LicenseStatus.CreativeCommons:
                     WriteFields(licenseStatus, "Creative Commons", "Verwendung mit Quellenangabe gestattet, Credit Autor", Color.White, Color.FromArgb(252, 175, 80));
+                    break;
+                case LicenseStatus.LemnoslifeTooManyTraffic:
+                    WriteFields(licenseStatus, "Fehler 400", "Zu viel Traffic, versuche es später erneut", Color.FromArgb(244, 67, 54), Color.FromArgb(76, 175, 80));
                     break;
                 case LicenseStatus.Licensed:
                 default:
@@ -557,5 +656,4 @@ namespace Utils.Lib.YouTube
 
         public string videoId { get; set; }
     }
-
 }
