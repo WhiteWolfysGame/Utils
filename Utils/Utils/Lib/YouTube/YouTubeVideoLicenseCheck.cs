@@ -93,7 +93,7 @@ namespace Utils.Lib.YouTube
 
             CheckByYoutubeApi();
             CheckByYoutubeRawHtml();
-            CheckByLemnoslife();
+            CheckByYoutubeOperationalApi();
 
             BuildFinalLicenseStatus();
         }
@@ -330,29 +330,30 @@ namespace Utils.Lib.YouTube
         /// <summary>
         /// Überprüfung eines Youtube-Videos mit Hilfe vom JSON-Ergebnis von Lemnoslife's Websource
         /// </summary>
-        private void CheckByLemnoslife()
+        private void CheckByYoutubeOperationalApi()
         {
             using (HttpClient client = new HttpClient())
             {
-                string lemnoslifeUrl = $"https://yt.lemnoslife.com/videos?part=musics&id={videoId}";
+                //string lemnoslifeUrl = $"https://yt.lemnoslife.com/videos?part=musics&id={videoId}";
+                string operationalApiUrl = $"https://whitewolfysgame.com/fileadmin/System/YouTube-operational-API/videos?part=musics&id={videoId}";
                 try
                 {
-                    HttpResponseMessage response = client.GetAsync(lemnoslifeUrl).Result;
+                    HttpResponseMessage response = client.GetAsync(operationalApiUrl).Result;
                     if (response.IsSuccessStatusCode)
                     {
                         string jsonString = response.Content.ReadAsStringAsync().Result;
                         Json.Json json = new Json.Json();
-                        LemnoslifeJsondata data = json.GetObjectFromJsonString<LemnoslifeJsondata>(jsonString);
+                        YoutubeOperationalApi data = json.GetObjectFromJsonString<YoutubeOperationalApi>(jsonString);
 
                         if (data.items != null && data.items.Count > 0)
                         {
-                            resultLicenseByLemnoslife = (data.items[0].musics.Count > 0) ? CheckLemnoslifeMusicData(data) : LicenseStatus.NoCopyright;
+                            resultLicenseByLemnoslife = (data.items[0].musics.Count > 0) ? CheckYoutubeOperationalApi(data) : LicenseStatus.NoCopyright;
                         }
                         else
                         {
                             // Fehler auf der Seite aufgetreten, keine Info leider. ErrCode 400, heißt hier nicht zwingend lizensiert
                             //throw new Exception("Fehlercode 400 auf Lemnoslife-Data! Versuche es später noch einmal");
-                            resultLicenseByLemnoslife = LicenseStatus.LemnoslifeTooManyTraffic;
+                            resultLicenseByLemnoslife = LicenseStatus.YoutubeOperationalApiTooManyTraffic;
                         }
                     }
                     else
@@ -374,7 +375,7 @@ namespace Utils.Lib.YouTube
         /// </summary>
         /// <param name="data">Json-Objektdaten von Lemnoslife</param>
         /// <returns></returns>
-        private LicenseStatus CheckLemnoslifeMusicData(LemnoslifeJsondata data)
+        private LicenseStatus CheckYoutubeOperationalApi(YoutubeOperationalApi data)
         {
             LicenseStatus resultFinal = LicenseStatus.NoCopyright;
             LicenseStatus result;
@@ -468,7 +469,7 @@ namespace Utils.Lib.YouTube
                         //, resultLicenseByApiDescription
                     };
 
-                LicenseStatus[] finalSourcesCheck = (resultLicenseByLemnoslife == LicenseStatus.LemnoslifeTooManyTraffic)
+                LicenseStatus[] finalSourcesCheck = (resultLicenseByLemnoslife == LicenseStatus.YoutubeOperationalApiTooManyTraffic)
                     ? sourceCheck_TooManyTraffic : sourceCheck_NormalCheck;
 
                 finalStatus = GetHighestPriorityLicense(finalSourcesCheck);
@@ -518,9 +519,9 @@ namespace Utils.Lib.YouTube
         Licensed = 2,
         //CreativeCommonsWithExtendedLicense = 3,
         /// <summary>
-        /// Seite kann zwar geladen werden, jedoch wird seitens Youtube Fehlercode 400 ausgegeben für zu viel Traffic auf der API
+        /// Die Operational-API hat derzeit zu viel Traffic
         /// </summary>
-        LemnoslifeTooManyTraffic = 4,
+        YoutubeOperationalApiTooManyTraffic = 4,
 
     }
 
@@ -570,7 +571,7 @@ namespace Utils.Lib.YouTube
                 case LicenseStatus.CreativeCommons:
                     WriteFields(licenseStatus, "Creative Commons", "Verwendung mit Quellenangabe gestattet, Credit Autor", Color.White, Color.FromArgb(252, 175, 80));
                     break;
-                case LicenseStatus.LemnoslifeTooManyTraffic:
+                case LicenseStatus.YoutubeOperationalApiTooManyTraffic:
                     WriteFields(licenseStatus, "Fehler 400", "Zu viel Traffic, versuche es später erneut", Color.FromArgb(244, 67, 54), Color.FromArgb(76, 175, 80));
                     break;
                 case LicenseStatus.Licensed:
@@ -610,7 +611,7 @@ namespace Utils.Lib.YouTube
         }
     }
 
-    internal class LemnoslifeJsondata
+    internal class YoutubeOperationalApi
     {
         public string kind { get; set; }
 
