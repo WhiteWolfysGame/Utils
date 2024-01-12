@@ -3,8 +3,11 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -156,6 +159,148 @@ namespace Utils.Lib.YouTube
             ReportPlaylistProgress(current++, response.PageInfo.TotalResults.Value);
 
             return playlistItems;
+        }
+
+        /// <summary>
+        /// Gibt eine neue Liste mit Playlist-Elementen zurück, basierend der alten Informationen
+        /// </summary>
+        /// <param name="listToCheck">Alte Youtube-Playlist die überprüft werden soll</param>
+        /// <returns>Liste der Playlist-Elemente</returns>
+        public List<YouTubePlaylistItem> GetPlaylistItems(List<YouTubePlaylistItem> listToCheck)
+        {
+            List<YouTubePlaylistItem> playlistItems = new List<YouTubePlaylistItem>();
+
+            int current = 0;
+            foreach (YouTubePlaylistItem item in listToCheck)
+            {
+                YouTubePlaylistItem playlistItem = new YouTubePlaylistItem
+                {
+                    VideoId = item.VideoId,
+                    Title = item.Title,
+                    VideoOwnerChannelName = item.VideoOwnerChannelName,
+                    Description = item.Description,
+                    Duration = item.Duration,
+                    Thumbnail = item.Thumbnail
+                };
+
+                playlistItems.Add(playlistItem);
+                ReportPlaylistProgress(current++, listToCheck.Count);
+            }
+
+            ReportPlaylistProgress(current++, listToCheck.Count);
+
+            return playlistItems;
+        }
+
+
+        /// <summary>
+        /// Gibt das Datum der letzten Bearbeitung der Playlist zurück
+        /// </summary>
+        /// <param name="playlistID">Zu prüfende Playlist-ID</param>
+        /// <returns>Letztes Updatedatum</returns>
+        public DateTime PlaylistLastUpdate(string playlistID)
+        {
+            // Es gibt seitens der API keine Möglichkeit, um geziehlt nach dem letzten Update zu filtern, also mache ich es jetzt wie folgt...
+            // 1. Die RAW-HTMl herunterladen
+            string html = GetPlaylistHtml(playlistID);
+
+            // 2. Daten nach RegEx-Pattern filtern:
+            string filteredValue = GetPlaylistFilteredHtml(html);
+
+            // 3. Jetzt noch in ein gültiges DateTime-Format umwandeln, dabei gibt es jedoch verschiedene Youtube-Seitige Daten
+            DateTime theDate = GetPlaylistFilteredDate(filteredValue);
+
+            return theDate;
+        }
+
+        private static string GetPlaylistHtml(string playlistID)
+        {
+            string html = string.Empty;
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = client.GetAsync("https://www.youtube.com/playlist?list=" + playlistID).Result;
+                    html = (response.IsSuccessStatusCode) ? response.Content.ReadAsStringAsync().Result : string.Empty;
+                }
+            }
+            catch (Exception)
+            { }
+
+            return html;
+        }
+
+        private static string  GetPlaylistFilteredHtml(string html)
+        {
+            string filteredValue = string.Empty;
+
+            // Regulärer Ausdruck für den Inhalt von
+            //      "\"byline\":\\[\\{(.*?)\"simpleText\":\"(.*?)\"\\}\\]\\}\\}\\}"
+            string pattern = "\"byline\":\\[\\{(.*?)\"simpleText\":\"(.*?)\"\\}\\]\\}\\}\\}";
+
+            // Regex-Match
+            Match match = Regex.Match(html, pattern, RegexOptions.Singleline);
+
+            // Überprüfe, ob ein Match gefunden wurde
+            if (match.Success)
+            {
+                string textSnippet = (match.Success) ? match.Groups[2].Value : string.Empty;
+                filteredValue = textSnippet.Substring(textSnippet.IndexOf("[{\"text\":\"") + "[{\"text\":\"".Length);
+            }
+
+            return filteredValue;
+        }
+
+        private static DateTime GetPlaylistFilteredDate(string filteredValue)
+        {
+            DateTime theDate = DateTime.MinValue;
+
+            // Fall 1.1: Deutsches Datumsformat
+            // Regulärer Ausdruck für das Datumsformat "28.06.2021"
+            string pattern = @"(\d{2}.\d{2}.\d{4})";
+            Match match = Regex.Match(filteredValue, pattern);
+
+            if (match.Success)
+            {
+                string dateString = match.Groups[1].Value;
+                DateTime.TryParseExact(dateString, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out theDate);
+            }
+
+            // Fall 1.2 Englisches Datumsformat
+            // Regulärer Ausdruck für das Datumsformat "5 Feb 2018"
+            pattern = @"(\d{1,2} [a-zA-Z]+ \d{4})";
+            match = Regex.Match(filteredValue, pattern);
+
+            if (match.Success)
+            {
+                string dateString = match.Groups[1].Value;
+                DateTime.TryParseExact(dateString, "d MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out theDate);
+            }
+
+            // Fall 2: "Vor \"},{\"text\":\"4\"},{\"text\":\" Tagen aktualisiert"
+            pattern = "\"text\":\"(\\d+)\"";
+            match = Regex.Match(filteredValue, pattern);
+
+            if (match.Success)
+            {
+                string numberString = match.Groups[1].Value;
+                int.TryParse(numberString, out int daysUpdated);
+                theDate = DateTime.Today.AddDays(-daysUpdated);
+            }
+
+            // Fall 3: "Heute aktualisiert"
+            if (filteredValue.ToLower().Contains("heute") || filteredValue.ToLower().Contains("today"))
+            {
+                theDate = DateTime.Today;
+            }
+
+            // Fall 4: "Gestern aktualisiert"
+            if (filteredValue.ToLower().Contains("gestern") || filteredValue.ToLower().Contains("yesterday"))
+            {
+                theDate = DateTime.Today.AddDays(-1);
+            }
+
+            return theDate;
         }
 
         private TimeSpan GetVideoDuration(string videoId)

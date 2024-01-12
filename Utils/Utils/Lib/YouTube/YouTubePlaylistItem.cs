@@ -24,6 +24,7 @@ namespace Utils.Lib.YouTube
         /// <summary>
         /// Das Vorschaubild des Youtube-Videos
         /// </summary>
+        [Newtonsoft.Json.JsonIgnore]
         public Image Thumbnail { get; set; }
 
         /// <summary>
