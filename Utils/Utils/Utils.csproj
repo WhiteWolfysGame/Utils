@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <AssemblyVersion>1.9.6</AssemblyVersion>
+    <AssemblyVersion>1.10.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
