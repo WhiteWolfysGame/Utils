@@ -14,7 +14,7 @@ namespace Utils.MethodExtension
         /// <summary>
         /// Erweitert einen Knoten bis zu einem bestimmtem Pfad
         /// </summary>
-        /// <param name="tv"></param>
+        /// <param name="tv">TreeView, auf die zugegriffen wird</param>
         /// <param name="fullPath">Pfad, bis zu der die Knoten geöffnet werden sollen</param>
         public static void Expand(this TreeView tv, string fullPath)
         {

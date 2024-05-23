@@ -136,17 +136,21 @@ namespace Utils.Lib.YouTube
                 response = request.Execute();
                 foreach (PlaylistItem item in response.Items)
                 {
-                    YouTubePlaylistItem playlistItem = new YouTubePlaylistItem
+                    if(item.Snippet.Title.ToLower() != "private video")
                     {
-                        VideoId = item.Snippet.ResourceId.VideoId,
-                        Title = item.Snippet.Title,
-                        VideoOwnerChannelName = item.Snippet.VideoOwnerChannelTitle,
-                        Description = item.Snippet.Description,
-                        Duration = GetVideoDuration(item.Snippet.ResourceId.VideoId),
-                        Thumbnail = GetThumbnail(item.Snippet.Thumbnails.High.Url)
-                    };
+                        YouTubePlaylistItem playlistItem = new YouTubePlaylistItem
+                        {
+                            VideoId = item.Snippet.ResourceId.VideoId,
+                            Title = item.Snippet.Title,
+                            VideoOwnerChannelName = item.Snippet.VideoOwnerChannelTitle,
+                            Description = item.Snippet.Description,
+                            Duration = GetVideoDuration(item.Snippet.ResourceId.VideoId),
+                            Thumbnail = GetThumbnail(item.Snippet.Thumbnails.High.Url)
+                        };
 
-                    playlistItems.Add(playlistItem);
+                        playlistItems.Add(playlistItem);
+                    }
+
                     ReportPlaylistProgress(current++, response.PageInfo.TotalResults.Value);
                 }
                 if (response.NextPageToken == null)
